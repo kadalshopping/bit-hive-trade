@@ -8,8 +8,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { signOut } from '@/lib/auth';
-import { Bitcoin, TrendingUp, History, LogOut } from 'lucide-react';
+import { Bitcoin, TrendingUp, History, LogOut, Wallet } from 'lucide-react';
 import { useBtcPrice } from '@/hooks/useBtcPrice';
+import { BankAccountForm } from '@/components/BankAccountForm';
+import { EarningsCard } from '@/components/EarningsCard';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface Investment {
   id: string;
@@ -35,11 +38,12 @@ const Dashboard = () => {
   const { user, userRole, loading } = useAuth();
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [investAmount, setInvestAmount] = useState('');
+  const [investAmountInr, setInvestAmountInr] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const { usd: currentBtcPrice, inr: btcPriceInr, loading: priceLoading } = useBtcPrice();
 
   const microBtcPriceInr = btcPriceInr / 1000000; // 1 micro BTC = 1/1,000,000 BTC
+  const USD_TO_INR = 83.5; // Exchange rate
 
   useEffect(() => {
     if (!loading && !user) {
@@ -86,25 +90,30 @@ const Dashboard = () => {
   const handleInvest = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const amount = parseFloat(investAmount);
-    if (isNaN(amount) || amount <= 0) {
-      toast.error('Please enter a valid amount');
+    const amountInr = parseFloat(investAmountInr);
+    if (isNaN(amountInr) || amountInr < 100) {
+      toast.error('Minimum investment is ₹100');
       return;
     }
 
     setSubmitting(true);
 
-    const btcAmount = amount / currentBtcPrice;
+    const amountUsd = amountInr / USD_TO_INR;
+    const btcAmount = amountUsd / currentBtcPrice;
+    const nextReturnDate = new Date();
+    nextReturnDate.setMonth(nextReturnDate.getMonth() + 1);
 
     // Create investment
     const { error: investError } = await supabase
       .from('investments')
       .insert({
         user_id: user?.id,
-        amount_usd: amount,
+        amount_usd: amountUsd,
         btc_amount: btcAmount,
         btc_price_at_purchase: currentBtcPrice,
         status: 'active',
+        monthly_return_percent: 3.0,
+        next_return_due_at: nextReturnDate.toISOString(),
       });
 
     if (investError) {
@@ -119,7 +128,7 @@ const Dashboard = () => {
       .insert({
         user_id: user?.id,
         type: 'buy',
-        amount_usd: amount,
+        amount_usd: amountUsd,
         btc_amount: btcAmount,
         btc_price: currentBtcPrice,
         status: 'completed',
@@ -129,7 +138,7 @@ const Dashboard = () => {
       toast.error('Failed to record transaction');
     } else {
       toast.success('Investment successful!');
-      setInvestAmount('');
+      setInvestAmountInr('');
       loadInvestments();
       loadTransactions();
     }
@@ -142,17 +151,27 @@ const Dashboard = () => {
     navigate('/auth');
   };
 
-  const totalInvested = investments
+  const totalInvestedUsd = investments
     .filter(inv => inv.status === 'active')
     .reduce((sum, inv) => sum + Number(inv.amount_usd), 0);
+
+  const totalInvestedInr = totalInvestedUsd * USD_TO_INR;
 
   const totalBtc = investments
     .filter(inv => inv.status === 'active')
     .reduce((sum, inv) => sum + Number(inv.btc_amount), 0);
 
-  const currentValue = totalBtc * currentBtcPrice;
-  const profitLoss = currentValue - totalInvested;
-  const profitLossPercent = totalInvested > 0 ? (profitLoss / totalInvested) * 100 : 0;
+  const currentValueUsd = totalBtc * currentBtcPrice;
+  const currentValueInr = currentValueUsd * USD_TO_INR;
+  
+  // Calculate BTC profit (from price appreciation)
+  const btcProfitInr = currentValueInr - totalInvestedInr;
+  
+  // Calculate 3% monthly returns
+  const monthlyReturnInr = totalInvestedInr * 0.03;
+  
+  // Total earnings = Monthly returns + BTC profit
+  const totalEarningsInr = monthlyReturnInr + btcProfitInr;
 
   if (loading || priceLoading) {
     return (
@@ -195,115 +214,113 @@ const Dashboard = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h2 className="text-3xl font-bold mb-2">Welcome back!</h2>
-          <p className="text-muted-foreground">Manage your Bitcoin investments</p>
+          <p className="text-muted-foreground">Earn 3% monthly + BTC price profits</p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Total Invested</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">${totalInvested.toFixed(2)}</div>
-              <p className="text-xs text-muted-foreground">{totalBtc.toFixed(8)} BTC</p>
-            </CardContent>
-          </Card>
+        <Tabs defaultValue="dashboard" className="space-y-6">
+          <TabsList className="grid w-full max-w-md mx-auto grid-cols-3">
+            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+            <TabsTrigger value="invest">Invest</TabsTrigger>
+            <TabsTrigger value="bank">Bank Details</TabsTrigger>
+          </TabsList>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Current Value</CardTitle>
-              <Bitcoin className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">${currentValue.toFixed(2)}</div>
-              <p className="text-xs text-muted-foreground">BTC: ${currentBtcPrice.toLocaleString()}</p>
-              <p className="text-xs text-muted-foreground">µBTC: ₹{microBtcPriceInr.toFixed(4)}</p>
-            </CardContent>
-          </Card>
+          <TabsContent value="dashboard" className="space-y-6">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium">Total Invested</CardTitle>
+                <Wallet className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">₹{totalInvestedInr.toFixed(2)}</div>
+                <p className="text-xs text-muted-foreground">{totalBtc.toFixed(8)} BTC</p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Profit/Loss</CardTitle>
-              <TrendingUp className={`h-4 w-4 ${profitLoss >= 0 ? 'text-success' : 'text-destructive'}`} />
-            </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold ${profitLoss >= 0 ? 'text-success' : 'text-destructive'}`}>
-                {profitLoss >= 0 ? '+' : ''}{profitLoss.toFixed(2)}
-              </div>
-              <p className={`text-xs ${profitLoss >= 0 ? 'text-success' : 'text-destructive'}`}>
-                {profitLossPercent >= 0 ? '+' : ''}{profitLossPercent.toFixed(2)}%
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+            <EarningsCard 
+              totalInvestedInr={totalInvestedInr}
+              monthlyReturnInr={monthlyReturnInr}
+              btcProfitInr={btcProfitInr}
+              totalEarningsInr={totalEarningsInr}
+            />
 
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Make Investment</CardTitle>
-              <CardDescription>Buy Bitcoin with USD</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleInvest} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="amount">Amount (USD)</Label>
-                  <Input
-                    id="amount"
-                    type="number"
-                    step="0.01"
-                    min="0.01"
-                    placeholder="100.00"
-                    value={investAmount}
-                    onChange={(e) => setInvestAmount(e.target.value)}
-                    required
-                  />
-                  {investAmount && (
-                    <p className="text-sm text-muted-foreground">
-                      ≈ {(parseFloat(investAmount) / currentBtcPrice).toFixed(8)} BTC
-                    </p>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <History className="h-5 w-5" />
+                  Recent Transactions
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {transactions.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-4">No transactions yet</p>
+                  ) : (
+                    transactions.map((tx) => (
+                      <div key={tx.id} className="flex justify-between items-center py-2 border-b last:border-0">
+                        <div>
+                          <p className="font-medium capitalize">{tx.type}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(tx.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-medium">₹{(Number(tx.amount_usd) * USD_TO_INR).toFixed(2)}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {Number(tx.btc_amount).toFixed(8)} BTC
+                          </p>
+                        </div>
+                      </div>
+                    ))
                   )}
                 </div>
-                <Button type="submit" className="w-full" disabled={submitting}>
-                  {submitting ? 'Processing...' : 'Invest Now'}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <History className="h-5 w-5" />
-                Recent Transactions
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {transactions.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-4">No transactions yet</p>
-                ) : (
-                  transactions.map((tx) => (
-                    <div key={tx.id} className="flex justify-between items-center py-2 border-b last:border-0">
-                      <div>
-                        <p className="font-medium capitalize">{tx.type}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(tx.created_at).toLocaleDateString()}
+          <TabsContent value="invest">
+            <Card>
+              <CardHeader>
+                <CardTitle>Make Investment</CardTitle>
+                <CardDescription>Minimum ₹100 • Earn 3% monthly + BTC price profits</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleInvest} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="amount">Amount (INR)</Label>
+                    <Input
+                      id="amount"
+                      type="number"
+                      step="1"
+                      min="100"
+                      placeholder="100"
+                      value={investAmountInr}
+                      onChange={(e) => setInvestAmountInr(e.target.value)}
+                      required
+                    />
+                    {investAmountInr && parseFloat(investAmountInr) >= 100 && (
+                      <div className="text-sm space-y-1">
+                        <p className="text-muted-foreground">
+                          ≈ {(parseFloat(investAmountInr) / btcPriceInr).toFixed(8)} BTC
+                        </p>
+                        <p className="text-success font-medium">
+                          Monthly Return: ₹{(parseFloat(investAmountInr) * 0.03).toFixed(2)}
                         </p>
                       </div>
-                      <div className="text-right">
-                        <p className="font-medium">${Number(tx.amount_usd).toFixed(2)}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {Number(tx.btc_amount).toFixed(8)} BTC
-                        </p>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                    )}
+                  </div>
+                  <Button type="submit" className="w-full" disabled={submitting}>
+                    {submitting ? 'Processing...' : 'Invest Now'}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="bank">
+            <BankAccountForm userId={user?.id || ''} />
+          </TabsContent>
+        </Tabs>
+
       </main>
     </div>
   );
