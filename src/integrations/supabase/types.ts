@@ -21,7 +21,11 @@ export type Database = {
           btc_price_at_purchase: number
           created_at: string
           id: string
+          last_return_paid_at: string | null
+          monthly_return_percent: number | null
+          next_return_due_at: string | null
           status: string
+          total_fixed_returns_earned: number | null
           updated_at: string
           user_id: string
         }
@@ -31,7 +35,11 @@ export type Database = {
           btc_price_at_purchase: number
           created_at?: string
           id?: string
+          last_return_paid_at?: string | null
+          monthly_return_percent?: number | null
+          next_return_due_at?: string | null
           status?: string
+          total_fixed_returns_earned?: number | null
           updated_at?: string
           user_id: string
         }
@@ -41,7 +49,11 @@ export type Database = {
           btc_price_at_purchase?: number
           created_at?: string
           id?: string
+          last_return_paid_at?: string | null
+          monthly_return_percent?: number | null
+          next_return_due_at?: string | null
           status?: string
+          total_fixed_returns_earned?: number | null
           updated_at?: string
           user_id?: string
         }
@@ -55,20 +67,76 @@ export type Database = {
           },
         ]
       }
+      payouts: {
+        Row: {
+          amount_inr: number
+          bank_account_number: string
+          bank_ifsc_code: string
+          created_at: string
+          id: string
+          investment_id: string | null
+          payout_type: string
+          processed_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount_inr: number
+          bank_account_number: string
+          bank_ifsc_code: string
+          created_at?: string
+          id?: string
+          investment_id?: string | null
+          payout_type: string
+          processed_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount_inr?: number
+          bank_account_number?: string
+          bank_ifsc_code?: string
+          created_at?: string
+          id?: string
+          investment_id?: string | null
+          payout_type?: string
+          processed_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payouts_investment_id_fkey"
+            columns: ["investment_id"]
+            isOneToOne: false
+            referencedRelation: "investments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
+          bank_account_holder_name: string | null
+          bank_account_number: string | null
+          bank_ifsc_code: string | null
           created_at: string
           full_name: string
           id: string
           updated_at: string
         }
         Insert: {
+          bank_account_holder_name?: string | null
+          bank_account_number?: string | null
+          bank_ifsc_code?: string | null
           created_at?: string
           full_name: string
           id: string
           updated_at?: string
         }
         Update: {
+          bank_account_holder_name?: string | null
+          bank_account_number?: string | null
+          bank_ifsc_code?: string | null
           created_at?: string
           full_name?: string
           id?: string
@@ -161,6 +229,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_monthly_return: {
+        Args: { investment_id: string }
+        Returns: number
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
