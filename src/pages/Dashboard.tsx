@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { signOut } from '@/lib/auth';
 import { Bitcoin, TrendingUp, History, LogOut } from 'lucide-react';
+import { useBtcPrice } from '@/hooks/useBtcPrice';
 
 interface Investment {
   id: string;
@@ -36,9 +37,9 @@ const Dashboard = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [investAmount, setInvestAmount] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const { usd: currentBtcPrice, inr: btcPriceInr, loading: priceLoading } = useBtcPrice();
 
-  // Mock BTC price (in production, fetch from API)
-  const currentBtcPrice = 45000;
+  const microBtcPriceInr = btcPriceInr / 1000000; // 1 micro BTC = 1/1,000,000 BTC
 
   useEffect(() => {
     if (!loading && !user) {
@@ -153,7 +154,7 @@ const Dashboard = () => {
   const profitLoss = currentValue - totalInvested;
   const profitLossPercent = totalInvested > 0 ? (profitLoss / totalInvested) * 100 : 0;
 
-  if (loading) {
+  if (loading || priceLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -177,10 +178,17 @@ const Dashboard = () => {
             <Bitcoin className="h-6 w-6 text-primary" />
             <h1 className="text-xl font-bold">BitInvest</h1>
           </div>
-          <Button variant="ghost" size="sm" onClick={handleLogout}>
-            <LogOut className="h-4 w-4 mr-2" />
-            Logout
-          </Button>
+          <div className="flex items-center gap-4">
+            <div className="text-right hidden md:block">
+              <p className="text-xs text-muted-foreground">Live BTC Price</p>
+              <p className="text-sm font-semibold">${currentBtcPrice.toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground">1 µBTC = ₹{microBtcPriceInr.toFixed(4)}</p>
+            </div>
+            <Button variant="ghost" size="sm" onClick={handleLogout}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -210,6 +218,7 @@ const Dashboard = () => {
             <CardContent>
               <div className="text-2xl font-bold">${currentValue.toFixed(2)}</div>
               <p className="text-xs text-muted-foreground">BTC: ${currentBtcPrice.toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground">µBTC: ₹{microBtcPriceInr.toFixed(4)}</p>
             </CardContent>
           </Card>
 
