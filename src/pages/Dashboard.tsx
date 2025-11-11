@@ -16,7 +16,7 @@ import { DepositAddress } from '@/components/DepositAddress';
 import { WithdrawalRequests } from '@/components/WithdrawalRequests';
 import { PayoutRequestForm } from '@/components/PayoutRequestForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import logo from '@/assets/logo.png';
+import logo from '@/assets/micro-bitcoin-logo.jpg';
 
 interface Investment {
   id: string;
@@ -212,8 +212,8 @@ const Dashboard = () => {
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <img src={logo} alt="BitInvest" className="h-10 w-10" />
-            <h1 className="text-xl font-bold">BitInvest</h1>
+            <img src={logo} alt="Micro Bitcoin" className="h-12 w-12 rounded-full object-cover" />
+            <h1 className="text-xl font-bold">Micro Bitcoin</h1>
           </div>
           <div className="flex items-center gap-4">
             <div className="text-right hidden md:block">

@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { signOut } from '@/lib/auth';
 import { Bitcoin, Users, TrendingUp, DollarSign, LogOut, Settings, ArrowDownToLine } from 'lucide-react';
-import logo from '@/assets/logo.png';
+import logo from '@/assets/micro-bitcoin-logo.jpg';
 
 interface AdminStats {
   totalUsers: number;
@@ -235,8 +235,8 @@ const Admin = () => {
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <img src={logo} alt="BitInvest" className="h-10 w-10" />
-            <h1 className="text-xl font-bold">BitInvest Admin</h1>
+            <img src={logo} alt="Micro Bitcoin" className="h-12 w-12 rounded-full object-cover" />
+            <h1 className="text-xl font-bold">Micro Bitcoin Admin</h1>
           </div>
           <Button variant="ghost" size="sm" onClick={handleLogout}>
             <LogOut className="h-4 w-4 mr-2" />
