@@ -49,6 +49,7 @@ export default {
         },
         success: "hsl(142 76% 36%)",
         warning: "hsl(38 92% 50%)",
+        bitcoin: "hsl(25 95% 53%)",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

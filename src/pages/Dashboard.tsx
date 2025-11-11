@@ -12,7 +12,11 @@ import { Bitcoin, TrendingUp, History, LogOut, Wallet } from 'lucide-react';
 import { useBtcPrice } from '@/hooks/useBtcPrice';
 import { BankAccountForm } from '@/components/BankAccountForm';
 import { EarningsCard } from '@/components/EarningsCard';
+import { DepositAddress } from '@/components/DepositAddress';
+import { WithdrawalRequests } from '@/components/WithdrawalRequests';
+import { PayoutRequestForm } from '@/components/PayoutRequestForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import logo from '@/assets/logo.png';
 
 interface Investment {
   id: string;
@@ -40,6 +44,7 @@ const Dashboard = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [investAmountInr, setInvestAmountInr] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [profile, setProfile] = useState<any>(null);
   const { usd: currentBtcPrice, inr: btcPriceInr, loading: priceLoading } = useBtcPrice();
 
   const microBtcPriceInr = btcPriceInr / 1000000; // 1 micro BTC = 1/1,000,000 BTC
@@ -55,8 +60,21 @@ const Dashboard = () => {
     if (user) {
       loadInvestments();
       loadTransactions();
+      loadProfile();
     }
   }, [user]);
+
+  const loadProfile = async () => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('bank_account_number, bank_ifsc_code')
+      .eq('id', user?.id)
+      .single();
+    
+    if (data) {
+      setProfile(data);
+    }
+  };
 
   const loadInvestments = async () => {
     const { data, error } = await supabase
@@ -101,7 +119,7 @@ const Dashboard = () => {
     const amountUsd = amountInr / USD_TO_INR;
     const btcAmount = amountUsd / currentBtcPrice;
     const nextReturnDate = new Date();
-    nextReturnDate.setMonth(nextReturnDate.getMonth() + 1);
+    nextReturnDate.setDate(nextReturnDate.getDate() + 31); // 31 days from now
 
     // Create investment
     const { error: investError } = await supabase
@@ -193,8 +211,8 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/10">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Bitcoin className="h-6 w-6 text-primary" />
+          <div className="flex items-center gap-3">
+            <img src={logo} alt="BitInvest" className="h-10 w-10" />
             <h1 className="text-xl font-bold">BitInvest</h1>
           </div>
           <div className="flex items-center gap-4">
@@ -218,10 +236,12 @@ const Dashboard = () => {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full max-w-md mx-auto grid-cols-3">
+          <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-5">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+            <TabsTrigger value="deposit">Deposit</TabsTrigger>
             <TabsTrigger value="invest">Invest</TabsTrigger>
-            <TabsTrigger value="bank">Bank Details</TabsTrigger>
+            <TabsTrigger value="withdrawals">Withdrawals</TabsTrigger>
+            <TabsTrigger value="bank">Bank</TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard" className="space-y-6">
@@ -277,6 +297,10 @@ const Dashboard = () => {
             </Card>
           </TabsContent>
 
+          <TabsContent value="deposit">
+            <DepositAddress />
+          </TabsContent>
+
           <TabsContent value="invest">
             <Card>
               <CardHeader>
@@ -314,6 +338,18 @@ const Dashboard = () => {
                 </form>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="withdrawals">
+            <div className="space-y-6">
+              <PayoutRequestForm 
+                userId={user?.id || ''} 
+                maxAmount={totalEarningsInr}
+                bankAccount={profile?.bank_account_number}
+                bankIfsc={profile?.bank_ifsc_code}
+              />
+              <WithdrawalRequests userId={user?.id || ''} />
+            </div>
           </TabsContent>
 
           <TabsContent value="bank">
