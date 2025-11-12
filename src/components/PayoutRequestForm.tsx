@@ -33,16 +33,20 @@ export const PayoutRequestForm = ({
       return;
     }
 
-    const amountInr = parseFloat(amount);
-    if (isNaN(amountInr) || amountInr <= 0) {
+    const requestedAmount = parseFloat(amount);
+    if (isNaN(requestedAmount) || requestedAmount <= 0) {
       toast.error('Please enter a valid amount');
       return;
     }
 
-    if (amountInr > maxAmount) {
+    if (requestedAmount > maxAmount) {
       toast.error(`Maximum available: ₹${maxAmount.toFixed(2)}`);
       return;
     }
+
+    // Deduct 5% gas fee from the requested amount
+    const gasFee = requestedAmount * 0.05;
+    const netAmount = requestedAmount - gasFee;
 
     setSubmitting(true);
 
@@ -50,7 +54,7 @@ export const PayoutRequestForm = ({
       .from('payouts')
       .insert({
         user_id: userId,
-        amount_inr: amountInr,
+        amount_inr: netAmount, // Store net amount after gas fee
         payout_type: payoutType,
         bank_account_number: bankAccount,
         bank_ifsc_code: bankIfsc,
@@ -60,7 +64,7 @@ export const PayoutRequestForm = ({
     if (error) {
       toast.error('Failed to submit withdrawal request');
     } else {
-      toast.success('Withdrawal request submitted! Awaiting admin approval.');
+      toast.success(`Withdrawal request submitted! You will receive ₹${netAmount.toFixed(2)} after 5% gas fee.`);
       setAmount('');
     }
 
@@ -75,7 +79,7 @@ export const PayoutRequestForm = ({
           Request Withdrawal
         </CardTitle>
         <CardDescription>
-          Withdraw your earnings to your bank account
+          Withdraw your earnings to your bank account • 5% gas fee applies
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -110,6 +114,12 @@ export const PayoutRequestForm = ({
             <p className="text-xs text-muted-foreground">
               Available: ₹{maxAmount.toFixed(2)}
             </p>
+            {amount && parseFloat(amount) > 0 && (
+              <div className="text-sm space-y-1 border-t pt-2 mt-2">
+                <p className="text-muted-foreground">Gas Fee (5%): ₹{(parseFloat(amount) * 0.05).toFixed(2)}</p>
+                <p className="font-semibold text-foreground">You will receive: ₹{(parseFloat(amount) * 0.95).toFixed(2)}</p>
+              </div>
+            )}
           </div>
 
           {(!bankAccount || !bankIfsc) && (

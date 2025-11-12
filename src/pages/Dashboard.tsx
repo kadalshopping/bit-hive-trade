@@ -124,9 +124,13 @@ const Dashboard = () => {
     setSubmitting(true);
 
     try {
-      // Create Razorpay order
+      // Add 5% gas fee to the investment amount
+      const gasFee = amountInr * 0.05;
+      const totalPayable = amountInr + gasFee;
+
+      // Create Razorpay order with total payable amount
       const { data: orderData, error: orderError } = await supabase.functions.invoke('create-razorpay-order', {
-        body: { amount: amountInr }
+        body: { amount: totalPayable }
       });
 
       if (orderError || !orderData) {
@@ -367,7 +371,7 @@ const Dashboard = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Make Investment</CardTitle>
-                <CardDescription>Minimum ₹100 • Earn 3% monthly + BTC price profits</CardDescription>
+                <CardDescription>Minimum ₹100 • Earn 3% monthly + BTC price profits • 5% gas fee applies</CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleInvest} className="space-y-4">
@@ -391,6 +395,10 @@ const Dashboard = () => {
                         <p className="text-success font-medium">
                           Monthly Return: ₹{(parseFloat(investAmountInr) * 0.03).toFixed(2)}
                         </p>
+                        <div className="border-t pt-2 mt-2">
+                          <p className="text-muted-foreground">Gas Fee (5%): ₹{(parseFloat(investAmountInr) * 0.05).toFixed(2)}</p>
+                          <p className="font-semibold text-foreground">Total Payable: ₹{(parseFloat(investAmountInr) * 1.05).toFixed(2)}</p>
+                        </div>
                       </div>
                     )}
                   </div>
