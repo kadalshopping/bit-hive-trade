@@ -16,16 +16,14 @@ export const useAuth = () => {
         setSession(session);
         setUser(session?.user ?? null);
         
-        if (session?.user) {
-          setTimeout(async () => {
-            const role = await checkUserRole(session.user.id);
-            setUserRole(role);
-          }, 0);
-        } else {
-          setUserRole(null);
-        }
-        
-        setLoading(false);
+      if (session?.user) {
+        const role = await checkUserRole(session.user.id);
+        setUserRole(role);
+      } else {
+        setUserRole(null);
+      }
+      
+      setLoading(false);
       }
     );
 

@@ -257,7 +257,7 @@ const Dashboard = () => {
   // Total earnings = Monthly returns + BTC profit
   const totalEarningsInr = monthlyReturnInr + btcProfitInr;
 
-  if (loading || priceLoading) {
+  if (loading || priceLoading || userRole === null) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
