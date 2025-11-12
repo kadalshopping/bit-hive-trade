@@ -18,6 +18,13 @@ import { PayoutRequestForm } from '@/components/PayoutRequestForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import logo from '@/assets/micro-bitcoin-logo.jpg';
 
+// Extend window type for Razorpay
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
 interface Investment {
   id: string;
   amount_usd: number;
@@ -116,52 +123,107 @@ const Dashboard = () => {
 
     setSubmitting(true);
 
-    const amountUsd = amountInr / USD_TO_INR;
-    const btcAmount = amountUsd / currentBtcPrice;
-    const nextReturnDate = new Date();
-    nextReturnDate.setDate(nextReturnDate.getDate() + 31); // 31 days from now
-
-    // Create investment
-    const { error: investError } = await supabase
-      .from('investments')
-      .insert({
-        user_id: user?.id,
-        amount_usd: amountUsd,
-        btc_amount: btcAmount,
-        btc_price_at_purchase: currentBtcPrice,
-        status: 'active',
-        monthly_return_percent: 3.0,
-        next_return_due_at: nextReturnDate.toISOString(),
+    try {
+      // Create Razorpay order
+      const { data: orderData, error: orderError } = await supabase.functions.invoke('create-razorpay-order', {
+        body: { amount: amountInr }
       });
 
-    if (investError) {
-      toast.error('Failed to create investment');
+      if (orderError || !orderData) {
+        toast.error('Failed to initiate payment');
+        setSubmitting(false);
+        return;
+      }
+
+      // Load Razorpay script
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.async = true;
+      document.body.appendChild(script);
+
+      script.onload = () => {
+        const options = {
+          key: orderData.keyId,
+          amount: orderData.amount,
+          currency: orderData.currency,
+          name: 'Micro Bitcoin',
+          description: 'Bitcoin Investment',
+          order_id: orderData.orderId,
+          handler: async function (response: any) {
+            // Payment successful - create investment
+            const amountUsd = amountInr / USD_TO_INR;
+            const btcAmount = amountUsd / currentBtcPrice;
+            const nextReturnDate = new Date();
+            nextReturnDate.setDate(nextReturnDate.getDate() + 31);
+
+            const { error: investError } = await supabase
+              .from('investments')
+              .insert({
+                user_id: user?.id,
+                amount_usd: amountUsd,
+                btc_amount: btcAmount,
+                btc_price_at_purchase: currentBtcPrice,
+                status: 'active',
+                monthly_return_percent: 3.0,
+                next_return_due_at: nextReturnDate.toISOString(),
+              });
+
+            if (investError) {
+              toast.error('Investment created but failed to save');
+              setSubmitting(false);
+              return;
+            }
+
+            const { error: txError } = await supabase
+              .from('transactions')
+              .insert({
+                user_id: user?.id,
+                type: 'buy',
+                amount_usd: amountUsd,
+                btc_amount: btcAmount,
+                btc_price: currentBtcPrice,
+                status: 'completed',
+              });
+
+            if (txError) {
+              toast.error('Failed to record transaction');
+            } else {
+              toast.success('Investment successful!');
+              setInvestAmountInr('');
+              loadInvestments();
+              loadTransactions();
+            }
+
+            setSubmitting(false);
+          },
+          prefill: {
+            email: user?.email,
+          },
+          theme: {
+            color: '#F59E0B',
+          },
+          modal: {
+            ondismiss: function() {
+              setSubmitting(false);
+              toast.error('Payment cancelled');
+            }
+          }
+        };
+
+        const rzp = new (window as any).Razorpay(options);
+        rzp.open();
+      };
+
+      script.onerror = () => {
+        toast.error('Failed to load payment gateway');
+        setSubmitting(false);
+      };
+
+    } catch (error) {
+      console.error('Payment error:', error);
+      toast.error('Payment failed');
       setSubmitting(false);
-      return;
     }
-
-    // Create transaction
-    const { error: txError } = await supabase
-      .from('transactions')
-      .insert({
-        user_id: user?.id,
-        type: 'buy',
-        amount_usd: amountUsd,
-        btc_amount: btcAmount,
-        btc_price: currentBtcPrice,
-        status: 'completed',
-      });
-
-    if (txError) {
-      toast.error('Failed to record transaction');
-    } else {
-      toast.success('Investment successful!');
-      setInvestAmountInr('');
-      loadInvestments();
-      loadTransactions();
-    }
-
-    setSubmitting(false);
   };
 
   const handleLogout = async () => {
