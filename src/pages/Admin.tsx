@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { signOut } from '@/lib/auth';
 import { Bitcoin, Users, TrendingUp, DollarSign, LogOut, Settings, ArrowDownToLine } from 'lucide-react';
-import logo from '@/assets/micro-bitcoin-logo.jpg';
+import logo from '@/assets/micro-bitcoin-coin.jpg';
 
 interface AdminStats {
   totalUsers: number;

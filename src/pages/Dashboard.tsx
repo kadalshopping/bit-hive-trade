@@ -16,7 +16,7 @@ import { DepositAddress } from '@/components/DepositAddress';
 import { WithdrawalRequests } from '@/components/WithdrawalRequests';
 import { PayoutRequestForm } from '@/components/PayoutRequestForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import logo from '@/assets/micro-bitcoin-logo.jpg';
+import logo from '@/assets/micro-bitcoin-coin.jpg';
 
 // Extend window type for Razorpay
 declare global {

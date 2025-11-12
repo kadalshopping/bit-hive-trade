@@ -38,10 +38,19 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
     
+    /* Advanced gradients */
     --gradient-primary: linear-gradient(135deg, hsl(35 85% 45%), hsl(42 90% 55%));
     --gradient-accent: linear-gradient(135deg, hsl(30 70% 35%), hsl(35 85% 45%));
+    --gradient-hero: linear-gradient(180deg, hsl(35 85% 45% / 0.1), hsl(35 85% 45% / 0));
+    
+    /* Elegant shadows */
     --shadow-primary: 0 10px 40px -10px hsl(35 85% 45% / 0.4);
     --shadow-card: 0 4px 20px -2px hsl(30 15% 15% / 0.1);
+    --shadow-elegant: 0 20px 60px -15px hsl(30 15% 15% / 0.3);
+    --shadow-glow: 0 0 40px hsl(35 85% 45% / 0.6), 0 0 80px hsl(35 85% 45% / 0.3);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 98%;
 
@@ -89,10 +98,19 @@ All colors MUST be HSL.
     --input: 30 20% 22%;
     --ring: 35 85% 45%;
     
+    /* Advanced gradients for dark mode */
     --gradient-primary: linear-gradient(135deg, hsl(35 85% 45%), hsl(42 90% 55%));
     --gradient-accent: linear-gradient(135deg, hsl(30 70% 35%), hsl(35 85% 45%));
+    --gradient-hero: linear-gradient(180deg, hsl(35 85% 45% / 0.2), hsl(35 85% 45% / 0));
+    
+    /* Elegant shadows for dark mode */
     --shadow-primary: 0 10px 40px -10px hsl(35 85% 45% / 0.5);
     --shadow-card: 0 4px 20px -2px hsl(0 0% 0% / 0.4);
+    --shadow-elegant: 0 20px 60px -15px hsl(0 0% 0% / 0.6);
+    --shadow-glow: 0 0 40px hsl(35 85% 45% / 0.8), 0 0 80px hsl(35 85% 45% / 0.4);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -112,4 +130,24 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Custom animations */
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.delay-700 {
+  animation-delay: 700ms;
 }

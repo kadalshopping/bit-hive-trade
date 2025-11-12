@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { signUp, signIn } from '@/lib/auth';
 import { toast } from 'sonner';
-import { Bitcoin } from 'lucide-react';
+import logo from '@/assets/micro-bitcoin-coin.jpg';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -66,16 +66,29 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-accent/10 p-4">
-      <Card className="w-full max-w-md shadow-[var(--shadow-card)]">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/10 to-accent/20 p-4 relative overflow-hidden">
+      {/* Animated background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse delay-700" />
+      </div>
+
+      <Card className="w-full max-w-md shadow-[var(--shadow-elegant)] border-2 border-primary/20 relative z-10 backdrop-blur-sm bg-card/95">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
-            <div className="p-3 rounded-full bg-gradient-to-br from-primary to-primary/80">
-              <Bitcoin className="h-8 w-8 text-primary-foreground" />
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-30 blur-xl animate-pulse" />
+              <img 
+                src={logo} 
+                alt="Micro Bitcoin" 
+                className="relative h-20 w-20 rounded-full object-cover shadow-[var(--shadow-glow)] ring-4 ring-primary/30"
+              />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold">BitInvest Platform</CardTitle>
-          <CardDescription>Micro Bitcoin Investment Platform</CardDescription>
+          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+            Micro Bitcoin
+          </CardTitle>
+          <CardDescription className="text-base">Dual Earnings Investment Platform</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="login" className="w-full">
