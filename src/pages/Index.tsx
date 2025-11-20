@@ -114,8 +114,59 @@ const Index = () => {
       </main>
 
       <footer className="border-t mt-20 bg-card/50 backdrop-blur-sm relative z-10">
-        <div className="container mx-auto px-4 py-8 text-center text-muted-foreground">
-          <p>© 2024 Micro Bitcoin. All rights reserved.</p>
+        <div className="container mx-auto px-4 py-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <h3 className="font-semibold mb-4 text-foreground">Company</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>
+                  <button onClick={() => navigate("/contact")} className="hover:text-primary transition-colors">
+                    Contact Us
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-4 text-foreground">Legal</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>
+                  <button onClick={() => navigate("/terms")} className="hover:text-primary transition-colors">
+                    Terms & Conditions
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => navigate("/privacy")} className="hover:text-primary transition-colors">
+                    Privacy Policy
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-4 text-foreground">Policies</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>
+                  <button onClick={() => navigate("/shipping-policy")} className="hover:text-primary transition-colors">
+                    Shipping Policy
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => navigate("/cancellation-refund")} className="hover:text-primary transition-colors">
+                    Cancellation & Refund
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-4 text-foreground">Support</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>Email: support@microbitcoin.com</li>
+                <li>Phone: +91 1800-123-4567</li>
+              </ul>
+            </div>
+          </div>
+          <div className="text-center text-sm text-muted-foreground pt-8 border-t border-border/40">
+            <p>© 2024 Micro Bitcoin. All rights reserved.</p>
+          </div>
         </div>
       </footer>
     </div>
