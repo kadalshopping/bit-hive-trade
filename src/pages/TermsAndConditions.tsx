@@ -24,19 +24,19 @@ const TermsAndConditions = () => {
         </div>
       </header>
 
-      <main className="container py-12 relative z-10">
-        <div className="max-w-4xl mx-auto space-y-8">
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+      <main className="container py-6 sm:py-10 px-4 relative z-10">
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div className="text-center space-y-3">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent">
               Terms and Conditions
             </h1>
-            <p className="text-muted-foreground">Last updated: {new Date().toLocaleDateString()}</p>
+            <p className="text-sm text-muted-foreground">Last updated: {new Date().toLocaleDateString()}</p>
           </div>
 
           <Card className="shadow-card">
-            <CardContent className="prose prose-sm max-w-none pt-6 space-y-6">
+            <CardContent className="prose prose-sm max-w-none p-4 sm:p-6 space-y-4 sm:space-y-6">
               <section>
-                <h2 className="text-2xl font-semibold text-foreground mb-4">1. Acceptance of Terms</h2>
+                <h2 className="text-xl sm:text-2xl font-semibold text-foreground mb-3">1. Acceptance of Terms</h2>
                 <p className="text-muted-foreground">
                   By accessing and using Micro Bitcoin platform, you accept and agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use our services.
                 </p>
