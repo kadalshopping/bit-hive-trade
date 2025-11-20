@@ -276,48 +276,48 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/10">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <img src={logo} alt="Micro Bitcoin" className="h-12 w-12 rounded-full object-cover" />
-            <h1 className="text-xl font-bold">Micro Bitcoin</h1>
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <img src={logo} alt="Micro Bitcoin" className="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover" />
+            <h1 className="text-base sm:text-xl font-bold">Micro Bitcoin</h1>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <div className="text-right hidden md:block">
               <p className="text-xs text-muted-foreground">Live BTC Price</p>
               <p className="text-sm font-semibold">${currentBtcPrice.toLocaleString()}</p>
               <p className="text-xs text-muted-foreground">1 µBTC = ₹{microBtcPriceInr.toFixed(4)}</p>
             </div>
-            <Button variant="ghost" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-1 sm:gap-2">
+              <LogOut className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Logout</span>
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-2">Welcome back!</h2>
-          <p className="text-muted-foreground">Earn 3% monthly + BTC price profits</p>
+      <main className="container mx-auto px-4 py-4 sm:py-6">
+        <div className="mb-4 sm:mb-6">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2">Welcome back!</h2>
+          <p className="text-sm sm:text-base text-muted-foreground">Earn 3% monthly + BTC price profits</p>
         </div>
 
-        <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-5">
-            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-            <TabsTrigger value="deposit">Deposit</TabsTrigger>
-            <TabsTrigger value="invest">Invest</TabsTrigger>
-            <TabsTrigger value="withdrawals">Withdrawals</TabsTrigger>
-            <TabsTrigger value="bank">Bank</TabsTrigger>
+        <Tabs defaultValue="dashboard" className="space-y-4 sm:space-y-6">
+          <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-5 h-auto">
+            <TabsTrigger value="dashboard" className="text-xs sm:text-sm">Dashboard</TabsTrigger>
+            <TabsTrigger value="deposit" className="text-xs sm:text-sm">Deposit</TabsTrigger>
+            <TabsTrigger value="invest" className="text-xs sm:text-sm">Invest</TabsTrigger>
+            <TabsTrigger value="withdrawals" className="text-xs sm:text-sm px-1 sm:px-3">Withdrawals</TabsTrigger>
+            <TabsTrigger value="bank" className="text-xs sm:text-sm">Bank</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="dashboard" className="space-y-6">
+          <TabsContent value="dashboard" className="space-y-4 sm:space-y-6">
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Total Invested</CardTitle>
-                <Wallet className="h-4 w-4 text-muted-foreground" />
+              <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 sm:p-6">
+                <CardTitle className="text-xs sm:text-sm font-medium">Total Invested</CardTitle>
+                <Wallet className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
               </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">₹{totalInvestedInr.toFixed(2)}</div>
+              <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+                <div className="text-2xl sm:text-3xl font-bold">₹{totalInvestedInr.toFixed(2)}</div>
                 <p className="text-xs text-muted-foreground">{totalBtc.toFixed(8)} BTC</p>
               </CardContent>
             </Card>
@@ -330,27 +330,27 @@ const Dashboard = () => {
             />
 
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <History className="h-5 w-5" />
+              <CardHeader className="p-4 sm:p-6">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <History className="h-4 w-4 sm:h-5 sm:w-5" />
                   Recent Transactions
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
+              <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+                <div className="space-y-2 sm:space-y-3">
                   {transactions.length === 0 ? (
                     <p className="text-sm text-muted-foreground text-center py-4">No transactions yet</p>
                   ) : (
                     transactions.map((tx) => (
                       <div key={tx.id} className="flex justify-between items-center py-2 border-b last:border-0">
                         <div>
-                          <p className="font-medium capitalize">{tx.type}</p>
+                          <p className="text-sm sm:text-base font-medium capitalize">{tx.type}</p>
                           <p className="text-xs text-muted-foreground">
                             {new Date(tx.created_at).toLocaleDateString()}
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="font-medium">₹{(Number(tx.amount_usd) * USD_TO_INR).toFixed(2)}</p>
+                          <p className="text-sm sm:text-base font-medium">₹{(Number(tx.amount_usd) * USD_TO_INR).toFixed(2)}</p>
                           <p className="text-xs text-muted-foreground">
                             {Number(tx.btc_amount).toFixed(8)} BTC
                           </p>
@@ -369,12 +369,12 @@ const Dashboard = () => {
 
           <TabsContent value="invest">
             <Card>
-              <CardHeader>
-                <CardTitle>Make Investment</CardTitle>
-                <CardDescription>Minimum ₹100 • Earn 3% monthly + BTC price profits • 5% gas fee applies</CardDescription>
+              <CardHeader className="p-4 sm:p-6">
+                <CardTitle className="text-base sm:text-lg">Make Investment</CardTitle>
+                <CardDescription className="text-xs sm:text-sm">Minimum ₹100 • Earn 3% monthly + BTC price profits • 5% gas fee applies</CardDescription>
               </CardHeader>
-              <CardContent>
-                <form onSubmit={handleInvest} className="space-y-4">
+              <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+                <form onSubmit={handleInvest} className="space-y-3 sm:space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="amount">Amount (INR)</Label>
                     <Input

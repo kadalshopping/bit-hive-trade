@@ -25,28 +25,28 @@ const ContactUs = () => {
         </div>
       </header>
 
-      <main className="container py-12 relative z-10">
-        <div className="max-w-4xl mx-auto space-y-8">
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+      <main className="container py-6 sm:py-10 px-4 relative z-10">
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div className="text-center space-y-3">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent">
               Contact Us
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-sm sm:text-base">
               Get in touch with our team for any questions or support
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
             <Card className="shadow-card hover:shadow-elegant transition-all duration-300">
-              <CardHeader className="text-center">
-                <div className="mx-auto w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center mb-4">
-                  <Mail className="h-6 w-6 text-primary-foreground" />
+              <CardHeader className="text-center p-4">
+                <div className="mx-auto w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-primary flex items-center justify-center mb-3">
+                  <Mail className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
                 </div>
-                <CardTitle>Email</CardTitle>
+                <CardTitle className="text-base sm:text-lg">Email</CardTitle>
               </CardHeader>
-              <CardContent className="text-center">
-                <p className="text-muted-foreground">support@microbitcoin.com</p>
-                <p className="text-muted-foreground mt-2">info@microbitcoin.com</p>
+              <CardContent className="text-center p-4 pt-0">
+                <p className="text-sm text-muted-foreground">support@microbitcoin.com</p>
+                <p className="text-sm text-muted-foreground mt-2">info@microbitcoin.com</p>
               </CardContent>
             </Card>
 

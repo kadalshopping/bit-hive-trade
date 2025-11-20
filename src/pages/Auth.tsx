@@ -66,39 +66,39 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/10 to-accent/20 p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/10 to-accent/20 p-3 sm:p-4 relative overflow-hidden">
       {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse delay-700" />
+        <div className="absolute top-20 left-10 w-72 h-72 sm:w-96 sm:h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-10 w-72 h-72 sm:w-96 sm:h-96 bg-accent/10 rounded-full blur-3xl animate-pulse delay-700" />
       </div>
 
       <Card className="w-full max-w-md shadow-[var(--shadow-elegant)] border-2 border-primary/20 relative z-10 backdrop-blur-sm bg-card/95">
-        <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
+        <CardHeader className="space-y-1 text-center p-4 sm:p-6">
+          <div className="flex justify-center mb-3 sm:mb-4">
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-30 blur-xl animate-pulse" />
               <img 
                 src={logo} 
                 alt="Micro Bitcoin" 
-                className="relative h-20 w-20 rounded-full object-cover shadow-[var(--shadow-glow)] ring-4 ring-primary/30"
+                className="relative h-16 w-16 sm:h-20 sm:w-20 rounded-full object-cover shadow-[var(--shadow-glow)] ring-4 ring-primary/30"
               />
             </div>
           </div>
-          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+          <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
             Micro Bitcoin
           </CardTitle>
-          <CardDescription className="text-base">Dual Earnings Investment Platform</CardDescription>
+          <CardDescription className="text-sm sm:text-base">Dual Earnings Investment Platform</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 sm:p-6 pt-0">
           <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 h-auto">
+              <TabsTrigger value="login" className="text-sm">Login</TabsTrigger>
+              <TabsTrigger value="signup" className="text-sm">Sign Up</TabsTrigger>
             </TabsList>
             
             <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-4">
+              <form onSubmit={handleLogin} className="space-y-3 sm:space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="login-email">Email</Label>
                   <Input
